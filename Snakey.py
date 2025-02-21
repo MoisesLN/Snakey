@@ -1,4 +1,4 @@
-import pygame  # type: ignore
+import pygame
 from pygame.locals import *  
 from sys import exit
 import random
@@ -49,15 +49,17 @@ def aumenta_cobra(lista_cobra):
     for i in range(len(lista_cobra)):
         # Cabeça
         if i == len(lista_cobra) - 1:
+            
+
             # Rotacionar a cabeça
             if x_controle > 0:
-                cabeca_virada = pygame.transform.rotate(img_cabeca, 0)
+                cabeca_virada = pygame.transform.rotate(img_cabeca, 0) # Direita
             elif x_controle < 0:
-                cabeca_virada = pygame.transform.rotate(img_cabeca, 180)
+                cabeca_virada = pygame.transform.rotate(img_cabeca, 180) # Esquerda
             elif y_controle > 0:
-                cabeca_virada = pygame.transform.rotate(img_cabeca, 270)
+                cabeca_virada = pygame.transform.rotate(img_cabeca, 270) # Baixo
             else:
-                cabeca_virada = pygame.transform.rotate(img_cabeca, 90)
+                cabeca_virada = pygame.transform.rotate(img_cabeca, 90) # Cima
             tela.blit(cabeca_virada, (lista_cobra[i][0], lista_cobra[i][1]))
 
         # Rabo
@@ -86,9 +88,9 @@ def aumenta_cobra(lista_cobra):
             x_atual, y_atual = lista_cobra[i]
 
             if x_atual > x_antigo:
-                angulo = 0 # direita
-            elif x_atual < x_antigo:
                 angulo = 180 # esquerda
+            elif x_atual < x_antigo:
+                angulo = 0 # direita
             elif y_atual > y_antigo:
                 angulo = 270 # baixo
             else:
@@ -96,8 +98,12 @@ def aumenta_cobra(lista_cobra):
             corpo_virado = pygame.transform.rotate(img_corpo, angulo)
             tela.blit(corpo_virado, (lista_cobra[i][0], lista_cobra[i][1]))
 
+def adicionar_ranking():
+    # Adicionar dados ao ranking
+    with open("ranking.txt", "a") as arquivo: # "a" é para append, adicionar items
+        arquivo.write(f"{nome_texto} - {pontos} pontos\n")
 
-# Estado do jogo (menu, jogo, ranking ou game over)
+# Estado do jogo (menu, jogo, ranking, game over ou créditos)
 estado = "menu"
 
 # Variáveis do jogo
@@ -216,17 +222,6 @@ while True:
                 if event.key == K_SPACE:
                     estado = "nome"
                     nome_texto = ''
-                    # Reinicializa as variáveis do jogo
-                    x_cobra = (altura_arena / 2) - 16
-                    y_cobra = (largura_arena / 2) - 16
-                    x_maca = random.randrange(x_arena, fim_x_arena, 16)
-                    y_maca = random.randrange(y_arena, fim_y_arena, 16)
-                    x_controle = 16
-                    y_controle = 0
-                    velocidade = 16
-                    comprimento = 3
-                    lista_cobra = []
-                    pontos = 0
                 elif event.key == K_x:
                     estado = "creditos"
                 elif event.key == K_ESCAPE:
@@ -238,8 +233,19 @@ while True:
             if event.type == KEYDOWN:
                 if event.key == K_RETURN: # Enter
                     estado = "jogo"
+                    # Reinicializa as variáveis do jogo
+                    x_cobra = (altura_arena / 2) - 16
+                    y_cobra = (largura_arena / 2) - 16
+                    x_maca = random.randrange(x_arena, fim_x_arena, 16)
+                    y_maca = random.randrange(y_arena, fim_y_arena, 16)
+                    x_controle = 16
+                    y_controle = 0
+                    velocidade = 16
+                    comprimento = 3
+                    lista_cobra = []
+                    pontos = 0
                 elif event.key == K_BACKSPACE:
-                    nome_texto = nome_texto [:-1] # Remove ultima palavra do nome se segurar backspace
+                    nome_texto = nome_texto [:-1] # Remove ultima letra do nome se segurar backspace
                 elif len(nome_texto) < 8:
                     nome_texto += event.unicode # adiciona qualquer outra tecla ao texto
 
@@ -252,51 +258,45 @@ while True:
                     else:
                         x_controle = -velocidade # Velocidade negativa pois vai no sentido contrário do X
                         y_controle = 0
+                        break
                 elif event.key == K_d or event.key == K_RIGHT:
                     if x_controle == -velocidade:
                         pass
                     else:
                         x_controle = velocidade
                         y_controle = 0
+                        break
                 elif event.key == K_w or event.key == K_UP:
                     if y_controle == velocidade:
                         pass
                     else:
                         x_controle = 0
                         y_controle = -velocidade
+                        break
                 elif event.key == K_s or event.key == K_DOWN:
                     if y_controle == -velocidade:
                         pass
                     else:
                         x_controle = 0
                         y_controle = velocidade
+                        break
         
         elif estado == "game_over": # Teclas da tela de game over
             if event.type == KEYDOWN:
-                # Adicionar dados ao ranking
-                with open("ranking.txt", "a") as arquivo: # "a" é para append, adicionar items
-                    arquivo.write(f"{nome_texto} - {pontos} pontos\n")
+                
                 if event.key == K_r:
                     estado = "nome"
                     nome_texto = '' # Reinicia o nome
-                    # Reinicializa as variáveis do jogo
-                    x_cobra = (largura_arena / 2) - 16
-                    y_cobra = (altura_arena / 2) - 16
-                    x_maca = random.randrange(x_arena, fim_x_arena - 16, 16)
-                    y_maca = random.randrange(y_arena, fim_y_arena - 16, 16)
-                    x_controle = 16
-                    y_controle = 0
-                    velocidade = 16
-                    comprimento = 3
-                    lista_cobra = []
-                    pontos = 0
+                    adicionar_ranking() # Adicionar dados ao ranking
 
                 elif event.key == K_ESCAPE:
                     pygame.quit()
                     exit()
+                    adicionar_ranking() # Adicionar dados ao ranking
                 
                 elif event.key == K_l:
                     estado = "ranking"
+                    adicionar_ranking() # Adicionar dados ao ranking
 
         elif estado == "ranking": # Teclas da tela de ranking
             if event.type == KEYDOWN:
@@ -304,7 +304,7 @@ while True:
                     estado = "menu"
                 elif event.key == K_BACKSPACE:
                     with open("ranking.txt", "w") as arquivo: # w = write, vai sobreescrever oq tem
-                        arquivo.write("") #escreve nada, esvazia o arquivo
+                        arquivo.write("") # escreve nada, esvazia o arquivo
                 
 
         elif estado == "creditos": # Teclas dos créditos
