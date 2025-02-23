@@ -173,6 +173,7 @@ while True:
         # Verifica colisão com o próprio corpo ou com as bordas
         if (lista_cobra.count(lista_cabeca) > 1 or x_cobra >= fim_x_arena or x_cobra < x_arena or y_cobra >= fim_y_arena or y_cobra < y_arena):
             estado = "game_over"
+            adicionar_ranking() # Adicionar dados ao ranking
         aumenta_cobra(lista_cobra)
 
 
@@ -287,16 +288,13 @@ while True:
                 if event.key == K_r:
                     estado = "nome"
                     nome_texto = '' # Reinicia o nome
-                    adicionar_ranking() # Adicionar dados ao ranking
 
                 elif event.key == K_ESCAPE:
                     pygame.quit()
                     exit()
-                    adicionar_ranking() # Adicionar dados ao ranking
                 
                 elif event.key == K_l:
                     estado = "ranking"
-                    adicionar_ranking() # Adicionar dados ao ranking
 
         elif estado == "ranking": # Teclas da tela de ranking
             if event.type == KEYDOWN:
