@@ -15,5 +15,5 @@ cd Snakey
 ```
 To run the game, just do the following line (when you're in the Snakey file):
 ```
-py Snakey.py
+python Snakey.py
 ```
